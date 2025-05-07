@@ -3,8 +3,10 @@ import sys
 from flask import Flask, request, jsonify
 
 sys.path.append('src')
-from azure_image_analysis import image_analysis
+# Adding custom modules
 from setup_logger import setup_logger
+from azure_image_analysis import image_analysis
+from azure_text_analysis_nlp import text_analysis_nlp
 
 app = Flask(__name__)
 logger = setup_logger()
@@ -36,26 +38,40 @@ def analyze_image():
 
         if not all([service_name, subscription_key, image, features]):
             return jsonify({'error': 'Missing required parameters'}), 400
-
-
-
-    # data = request.get_json()
-    # service_name = data.get('service_name') or request.form.get('service_name')
-    # subscription_key = data.get('subscription_key') or request
-    # features = data.get('features') or request.form.get('features')
-    # image_url = data.get('image_url')
-    # image_data = None
-    
-    # if not image_url:
-    #     image = request.files.get('image')
-    #     image_data = image.read()
-    #     image_url = None
     
     try:
         logger.info(f'Service name: {service_name}')
         logger.info(f'Image path: {image_url}')
         logger.info(f'Features: {features}')
         response = image_analysis(service_name, subscription_key, features, image_url, image_data)
+        return jsonify(response), 200
+
+    except Exception as error:
+        return jsonify({'error': str(error)}), 500
+    
+@app.route('/analyze-text/nlp/<functionality>', methods=['POST'])
+def analyze_text_nlp(functionality):
+    if request.is_json:
+        data = request.get_json()
+        service_name = data.get('service_name')
+        subscription_key = data.get('subscription_key')
+        text = data.get('text')
+
+        if not all([service_name, subscription_key, text]):
+            return jsonify({'error': 'Missing required parameters'}), 400
+    else:
+        service_name = request.form.get('service_name')
+        subscription_key = request.form.get('subscription_key')
+        text = request.form.get('text')
+
+        if not all([service_name, subscription_key, text]):
+            return jsonify({'error': 'Missing required parameters'}), 400
+
+    try:
+        logger.info(f'Service name: {service_name}')
+        logger.info(f'Text: {text}')
+        logger.info(f'Functionality: {functionality}')
+        response = text_analysis_nlp(service_name, subscription_key, text, functionality)
         return jsonify(response), 200
 
     except Exception as error:
