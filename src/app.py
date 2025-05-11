@@ -16,13 +16,12 @@ def index():
     logger.info('Api is up and running')
     return 'Api is up and running'
 
-@app.route('/analyze-image', methods=['POST'])
-def analyze_image():
+@app.route('/computer-vision/analyze-image/<features>', methods=['POST'])
+def analyze_image(features):
     if request.is_json:
         data = request.get_json()
         service_name = data.get('service_name')
         subscription_key = data.get('subscription_key')
-        features = data.get('features')
         image_url = data.get('image_url')
         image_data = None
 
@@ -48,9 +47,39 @@ def analyze_image():
 
     except Exception as error:
         return jsonify({'error': str(error)}), 500
-    
-@app.route('/analyze-text/nlp/<functionality>', methods=['POST'])
-def analyze_text_nlp(functionality):
+
+@app.route('/computer-vision/optical-character-recognition', methods=['POST'])
+def optical_character_recognition():
+    if request.is_json:
+        data = request.get_json()
+        service_name = data.get('service_name')
+        subscription_key = data.get('subscription_key')
+        image_url = data.get('image_url')
+        image_data = None
+
+        if not all([service_name, subscription_key, image_url]):
+            return jsonify({'error': 'Missing required parameters'}), 400
+    else:
+        service_name = request.form.get('service_name')
+        subscription_key = request.form.get('subscription_key')
+        image = request.files.get('image')
+        image_data = image.read()
+        image_url = None
+
+        if not all([service_name, subscription_key, image]):
+            return jsonify({'error': 'Missing required parameters'}), 400
+
+    try:
+        logger.info(f'Service name: {service_name}')
+        logger.info(f'Image path: {image_url}')
+        response = image_analysis(service_name, subscription_key, 'read', image_url, image_data)
+        return jsonify(response), 200
+
+    except Exception as error:
+        return jsonify({'error': str(error)}), 500
+
+@app.route('/nlp/analyze-text/<functionality>', methods=['POST'])
+def analyze_text(functionality):
     if request.is_json:
         data = request.get_json()
         service_name = data.get('service_name')

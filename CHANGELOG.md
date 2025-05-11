@@ -12,3 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added module for azure text analysis.
 - Added module for logging.
 - Added support for Dev Containers.
+
+[0.0.2] - 2025-05-11
+### Added
+- Added module for optical chacater recognition using azure ai vision service.
