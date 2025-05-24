@@ -26,6 +26,7 @@ def analyze_image(features):
         image_data = None
 
         if not all([service_name, subscription_key, image_url, features]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
     else:
         service_name = request.form.get('service_name')
@@ -36,6 +37,7 @@ def analyze_image(features):
         image_url = None
 
         if not all([service_name, subscription_key, image, features]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
     
     try:
@@ -43,9 +45,11 @@ def analyze_image(features):
         logger.info(f'Image path: {image_url}')
         logger.info(f'Features: {features}')
         response = image_analysis(service_name, subscription_key, features, image_url, image_data)
+        logger.info(f'Response: {response}')
         return jsonify(response), 200
 
     except Exception as error:
+        logger.error(f'Error: {error}')
         return jsonify({'error': str(error)}), 500
 
 @app.route('/computer-vision/optical-character-recognition', methods=['POST'])
@@ -58,6 +62,7 @@ def optical_character_recognition():
         image_data = None
 
         if not all([service_name, subscription_key, image_url]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
     else:
         service_name = request.form.get('service_name')
@@ -67,6 +72,7 @@ def optical_character_recognition():
         image_url = None
 
         if not all([service_name, subscription_key, image]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
 
     try:
@@ -76,6 +82,7 @@ def optical_character_recognition():
         return jsonify(response), 200
 
     except Exception as error:
+        logger.error(f'Error: {error}')
         return jsonify({'error': str(error)}), 500
 
 @app.route('/nlp/analyze-text/<functionality>', methods=['POST'])
@@ -87,6 +94,7 @@ def analyze_text(functionality):
         text = data.get('text')
 
         if not all([service_name, subscription_key, text]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
     else:
         service_name = request.form.get('service_name')
@@ -94,6 +102,7 @@ def analyze_text(functionality):
         text = request.form.get('text')
 
         if not all([service_name, subscription_key, text]):
+            logger.error('Missing required parameters')
             return jsonify({'error': 'Missing required parameters'}), 400
 
     try:
@@ -104,6 +113,7 @@ def analyze_text(functionality):
         return jsonify(response), 200
 
     except Exception as error:
+        logger.error(f'Error: {error}')
         return jsonify({'error': str(error)}), 500
 
 if __name__ == '__main__':
@@ -116,7 +126,7 @@ if __name__ == '__main__':
 
     if args.ssl:
         logger.info('Using SSL...')
-        context = ('cert.pem', 'key.pem')
+        context = ('certificates/cert.pem', 'certificates/key.pem')
     else:
         logger.info('Not using SSL...')
         context = None

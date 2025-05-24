@@ -8,9 +8,9 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 def image_analysis(service_name, subscription_key, features, image_url = None, image_data = None):
-    logger.info(f'Service name: {service_name}')
-    logger.info(f'Image path: {image_url}')
-    logger.info(f'Features: {features}')
+    logger.debug(f'Service name: {service_name}')
+    logger.debug(f'Image path: {image_url}')
+    logger.debug(f'Features: {features}')
     #url = 'https://ai102azureaiservices002.cognitiveservices.azure.com/vision/v3.2/analyze' # V3.2
     #url = 'https://ai102azureaiservices002.cognitiveservices.azure.com/computervision/imageanalysis:analyze' # V4.0
     url = f'https://{service_name}.cognitiveservices.azure.com/computervision/imageanalysis:analyze'
@@ -41,14 +41,15 @@ def image_analysis(service_name, subscription_key, features, image_url = None, i
 
     try:
         response = requests.post(url=url, json=data, headers=headers, params=params) if image_url else requests.post(url=url, data=data, headers=headers, params=params)
-        logger.info(f'Response text: {response.text}')
-        logger.info(f'Response code: {response.status_code}')
-        logger.info(f'Response headers: {json.dumps(dict(response.headers), indent=4, ensure_ascii=False)}')
-        logger.info(f'Response body: {json.dumps(response.json(), indent=4, ensure_ascii=False)}')
+        logger.debug(f'Response text: {response.text}')
+        logger.debug(f'Response code: {response.status_code}')
+        logger.debug(f'Response headers: {json.dumps(dict(response.headers), indent=4, ensure_ascii=False)}')
+        logger.debug(f'Response body: {json.dumps(response.json(), indent=4, ensure_ascii=False)}')
         return response.json()
 
     except Exception as error:
-        print(error)
+        logger.error(f'Error: {error}')
+        return None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

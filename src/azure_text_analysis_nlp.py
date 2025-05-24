@@ -8,9 +8,9 @@ from setup_logger import setup_logger
 logger = setup_logger()
 
 def text_analysis_nlp(service_name, subscription_key, text, functionality):
-    logger.info(f'Service name: {service_name}')
-    logger.info(f'Text: {text}')
-    logger.info(f'Functionality: {functionality}')
+    logger.debug(f'Service name: {service_name}')
+    logger.debug(f'Text: {text}')
+    logger.debug(f'Functionality: {functionality}')
     url = f'https://{service_name}.cognitiveservices.azure.com/language/:analyze-text'
 
     headers = {
@@ -40,14 +40,15 @@ def text_analysis_nlp(service_name, subscription_key, text, functionality):
 
     try:
         response = requests.post(url=url, json=body, headers=headers, params=params)
-        logger.info(f'Response text: {response.text}')
-        logger.info(f'Response code: {response.status_code}')
-        logger.info(f'Response headers: {json.dumps(dict(response.headers), indent=4, ensure_ascii=False)}')
-        logger.info(f'Response body: {json.dumps(response.json(), indent=4, ensure_ascii=False)}')
+        logger.debug(f'Response text: {response.text}')
+        logger.debug(f'Response code: {response.status_code}')
+        logger.debug(f'Response headers: {json.dumps(dict(response.headers), indent=4, ensure_ascii=False)}')
+        logger.debug(f'Response body: {json.dumps(response.json(), indent=4, ensure_ascii=False)}')
         return response.json()
 
     except Exception as error:
-        print(error)
+        logger.error(f'Error: {error}')
+        return None
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

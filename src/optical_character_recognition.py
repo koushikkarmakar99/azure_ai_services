@@ -8,8 +8,8 @@ from image_analysis import image_analysis
 from setup_logger import setup_logger
 logger = setup_logger()
 def optical_character_recognition(service_name, subscription_key, image_url=None, image_data=None):
-    logger.info(f'Service name: {service_name}')
-    logger.info(f'Image path: {image_url}')
+    logger.debug(f'Service name: {service_name}')
+    logger.debug(f'Image path: {image_url}')
     features = 'read'
     return image_analysis(service_name, subscription_key, features, image_url, image_data)
 
