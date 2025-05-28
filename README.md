@@ -1,4 +1,3 @@
-# azure_ai_services
 # Azure AI Services
 
 This repository provides a Flask-based REST API for interacting with various Azure AI services, including Computer Vision, Natural Language Processing (NLP), and Text Translation. The API is designed for real-time data processing and can be run securely with HTTPS support.
