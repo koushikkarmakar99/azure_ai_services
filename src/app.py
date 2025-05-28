@@ -7,6 +7,7 @@ sys.path.append('src')
 from setup_logger import setup_logger
 from azure_image_analysis import image_analysis
 from azure_text_analysis_nlp import text_analysis_nlp
+from azure_translate_text import language_detection, text_translation
 
 app = Flask(__name__)
 logger = setup_logger()
@@ -115,6 +116,27 @@ def analyze_text(functionality):
     except Exception as error:
         logger.error(f'Error: {error}')
         return jsonify({'error': str(error)}), 500
+
+@app.route('/nlp/detect-language', methods=['POST'])
+def detect_language():
+    data = request.get_json()
+    subscription_key = data.get('subscription_key')
+    region = data.get('region')
+    text = data.get('text')
+
+    if not all([subscription_key, region, text]):
+        logger.error('Missing required parameters')
+        return jsonify({'error': 'Missing required parameters'}), 400
+
+    try:
+        logger.info(f'Text: {text}')
+        response = language_detection(subscription_key, region, text)
+        return jsonify(response), 200
+
+    except Exception as error:
+        logger.error(f'Error: {error}')
+        return jsonify({'error': str(error)}), 500
+
 
 if __name__ == '__main__':
     logger.info('App is starting...')
