@@ -85,6 +85,48 @@ def text_translation(subscription_key, region, text, to_lang):
         logger.error(f'Error: {error}')
         return None
 
+def text_transliterate(subscription_key, region, text, from_script, to_script):
+    logger.debug(f'Text: {text}')
+    url = 'https://api.cognitive.microsofttranslator.com/transliterate?api-version=3.0'
+
+    headers = {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": subscription_key,
+        "Ocp-Apim-Subscription-Region": region
+    }
+
+    if not to_script:
+        logger.debug('To Script language is not provided. Defaulting to Latin.')
+        to_script = 'Latn'
+    else:
+        logger.debug(f'Transliterating to: {to_script}')
+
+    data = [{"text": text}]
+
+    params = {
+        "fromScript": from_script,
+        "toScript": to_script
+    }
+
+    detected_language = language_detection(subscription_key, region, text)
+    is_transliteration_supported = detected_language[0]['isTransliterationSupported']
+    logger.debug(f'Is transliteration supported: {is_transliteration_supported}')
+    if not is_transliteration_supported:
+        logger.error('Transliteration is not supported for the given scripts.')
+        return None
+
+    try:
+        response = requests.post(url=url, json=data, headers=headers, params=params)
+        logger.debug(f'Response text: {response.text}')
+        logger.debug(f'Response code: {response.status_code}')
+        logger.debug(f'Response headers: {json.dumps(dict(response.headers), indent=4, ensure_ascii=False)}')
+        logger.debug(f'Response body: {json.dumps(response.json(), indent=4, ensure_ascii=False)}')
+        return response.json()
+
+    except Exception as error:
+        logger.error(f'Error: {error}')
+        return None
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--subscription-key', type=str, help='Subscription key')

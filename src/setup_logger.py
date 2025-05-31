@@ -10,10 +10,10 @@ app = Flask(__name__)
 
 def setup_logger():
     logger.remove()  # Remove the default logger
-    logger.add(sys.stderr, 
-        level="INFO", 
+    logger.add(sys.stdout, 
+        level="DEBUG", 
         format="[{time:YYYY-MM-DD HH:mm:ss}] | {level} | {name}:{line} | {message}", 
         colorize=True
-    )  # Log to stderr
+    )  # Log to standard output
 
     return logger

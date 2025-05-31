@@ -7,7 +7,7 @@ sys.path.append('src')
 from setup_logger import setup_logger
 from azure_image_analysis import image_analysis
 from azure_text_analysis_nlp import text_analysis_nlp
-from azure_translate_text import language_detection, text_translation
+from azure_translate_text import language_detection, text_translation, text_transliterate
 
 app = Flask(__name__)
 logger = setup_logger()
@@ -136,7 +136,59 @@ def detect_language():
     except Exception as error:
         logger.error(f'Error: {error}')
         return jsonify({'error': str(error)}), 500
+    
+@app.route('/nlp/translate-text', methods=['POST'])
+def translate_text():
+    data = request.get_json()
+    subscription_key = data.get('subscription_key')
+    region = data.get('region')
+    text = data.get('text')
+    target_language = data.get('target_language') # Optional, defaults to English if not provided
+    
+    if target_language is None:
+        target_language = 'en'
 
+    if not all([subscription_key, region, text, target_language]):
+        logger.error('Missing required parameters')
+        return jsonify({'error': 'Missing required parameters'}), 400
+
+    try:
+        logger.info(f'Text: {text}')
+        logger.info(f'Target language: {target_language}')
+        response = text_translation(subscription_key, region, text, target_language)
+        return jsonify(response), 200
+
+    except Exception as error:
+        logger.error(f'Error: {error}')
+        return jsonify({'error': str(error)}), 500
+
+
+@app.route('/nlp/transliterate-text', methods=['POST'])
+def transliterate_text():
+    data = request.get_json()
+    subscription_key = data.get('subscription_key')
+    region = data.get('region')
+    text = data.get('text')
+    from_script = data.get('from_script')
+    to_script = data.get('to_script')
+
+    if to_script is None:
+        to_script = 'Latn'
+
+    if not all([subscription_key, region, text, from_script, to_script]):
+        logger.error('Missing required parameters')
+        return jsonify({'error': 'Missing required parameters'}), 400
+
+    try:
+        logger.info(f'Text: {text}')
+        logger.info(f'From script: {from_script}')
+        logger.info(f'To script: {to_script}')
+        response = text_transliterate(subscription_key, region, text, from_script, to_script)
+        return jsonify(response), 200
+
+    except Exception as error:
+        logger.error(f'Error: {error}')
+        return jsonify({'error': str(error)}), 500
 
 if __name__ == '__main__':
     logger.info('App is starting...')
