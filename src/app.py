@@ -12,10 +12,10 @@ from azure_translate_text import language_detection, text_translation, text_tran
 app = Flask(__name__)
 logger = setup_logger()
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
-    logger.info('Api is up and running')
-    return 'Api is up and running'
+    logger.info('Azure AI Services API is running.')
+    return jsonify({"status": "ok", "message": "Azure AI Services API is running."})
 
 @app.route('/computer-vision/analyze-image/<features>', methods=['POST'])
 def analyze_image(features):
